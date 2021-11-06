@@ -5,17 +5,17 @@
 #include <regex.h>
 #include <assert.h>
 
-bool convertIP2int( char *adresse_ip, unsigned int *ip_int );
+bool convertIP2int( char *adresse_ip, unsigned long int *ip_int );
 bool findIP( int ip_decimal );
 
 int main( int argc, char **argv )
 {
-    unsigned int ip_decimal;
+    unsigned long int ip_decimal;
 
     if (argc == 2) {
         // Affectation et test en une seule fois
         if ( convertIP2int( argv[1], &ip_decimal ) ) {
-            printf( "ip_decimal=%d\n", ip_decimal);
+            printf( "ip_decimal=%lu\n", ip_decimal);
             if ( findIP( ip_decimal ) ) {
                 printf("Trouvé");
             } else {
@@ -42,13 +42,13 @@ bool findIP( int ip_decimal )
 
 // Version avec expression reguliere
 // Si retourne false si adresse invalide
-bool convertIP2int( char *adresse_ip, unsigned int *ip_int )
+bool convertIP2int( char *adresse_ip, unsigned long int *ip_int )
 {
     char *IPpattern = "([[:digit:]]{1,3})\\.([[:digit:]]{1,3})\\.([[:digit:]]{1,3})\\.([[:digit:]]{1,3})";
     regex_t regex; 
     int err;
     regmatch_t pmatch[5];
-    int ip[4];
+    unsigned long int ip[4];
     bool ip_valid = false;
 
 //    printf("adresse IP: %s\n", adresse_ip );
@@ -86,7 +86,7 @@ bool convertIP2int( char *adresse_ip, unsigned int *ip_int )
         }
 
         if (ip_valid) {
-            *ip_int = (ip[0] << 24) | (ip[1] << 16) | (ip[2] << 8) | ip[3];  
+            *ip_int = (ip[0]<<24) | (ip[1] << 16) | (ip[2] << 8) | ip[3];
         }
     }
 
