@@ -1,18 +1,22 @@
 CC=gcc
 CFLAGS=-W -Wall -pedantic -std=c17
-LDFLAGS=-g
+LDFLAGS=
 EXEC=geoip
 SRC= $(wildcard *.c)
 OBJ= $(SRC:.c=.o)
 
 all: $(EXEC)
 
-geoip: $(OBJ)
+geoip: geoip.o validip.o ./validip/validip.h csv.o ./csv/csv.h ./csv/config.h
 	@$(CC) -o $@ $^ $(LDFLAGS)
 
-%.o: %.h
+csv.o: ./csv/csv.c ./csv/csv.h ./csv/config.h
+	@$(CC) -o $@ -c $< $(CFLAGS)
 
-%.o: %.c
+geoip.o: geoip.c
+	@$(CC) -o $@ -c $< $(CFLAGS)
+
+validip.o: ./validip/validip.c ./validip/validip.h
 	@$(CC) -o $@ -c $< $(CFLAGS)
 
 .PHONY: clean mrproper

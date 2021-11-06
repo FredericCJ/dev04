@@ -4,7 +4,10 @@
 #include <string.h>
 #include <regex.h>
 #include <assert.h>
-#include "validip.h"
+#include <errno.h>
+#include "./validip/validip.h"
+#include "./csv/csv.h"
+#include "./csv/config.h"
 
 bool findIP( int ip_decimal );
 
@@ -30,6 +33,12 @@ int main( int argc, char **argv )
         printf("\t%s <adresse_ip>\n", argv[0]);
         exit(EXIT_FAILURE);
     }
+    
+    csv_file csv;
+    openCSV(&csv);
+    char c = fgetc(csv.fcsv);
+    printf("%c",c);
+    closeCSV(&csv);
 
     return(EXIT_SUCCESS);
 }
