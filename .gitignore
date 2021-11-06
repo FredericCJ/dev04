@@ -1,3 +1,5 @@
 geoip.csv
 token
 geoip
+*.o
+*.csv
