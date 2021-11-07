@@ -35,10 +35,27 @@ int main( int argc, char **argv )
     }
     
     csv_file csv;
+
     openCSV(&csv);
-    char c = fgetc(csv.fcsv);
-    printf("%c",c);
-    closeCSV(&csv);
+    csv.read_header = false;
+
+    if (csv.is_open) {
+      while ( getRecordCSV(&csv) == 0 ) {
+
+            if ((csv.line_counter > 0) && (csv.line_counter <= 3)) {
+               printRecordCSV(&csv);
+               printf("\n");
+            }
+        }
+
+        printf("Taille ligne max = %d\n", csv.max_len);
+        printf("Nombre lignes = %d\n", csv.line_counter);
+
+        printFieldmaxCSV(&csv);
+        printf("\n");
+
+        closeCSV(&csv);
+    }
 
     return(EXIT_SUCCESS);
 }
