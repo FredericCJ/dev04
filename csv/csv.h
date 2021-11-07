@@ -3,6 +3,10 @@
 
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdio.h>
+#include <errno.h>
+#include <string.h>
+#include <stdlib.h>
 #include "config.h"
 
 typedef struct csv_file{

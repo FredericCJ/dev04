@@ -1,9 +1,3 @@
-#include <stdio.h>
-#include <stdio.h>
-#include <errno.h>
-#include <string.h>
-#include <stdlib.h>
-#include "config.h"
 #include "csv.h"
 
 int openCSV(csv_file *csv){
@@ -40,9 +34,13 @@ int getRecordCSV(csv_file *csv){
         line_len++;
         field_len++;
 
-        state = ((c=fgetc(csv->fcsv)) == '"' && state == OUT_OF_FIELD) ? QUOTED_FIELD : UNQUOTED_FIELD;
+        if(state == OUT_OF_FIELD){
+            c=fgetc(csv->fcsv);
+            state = (c == '"') ? QUOTED_FIELD : UNQUOTED_FIELD;
+        }
 
         if(state == QUOTED_FIELD){
+            c=fgetc(csv->fcsv);
             switch(c){
                 case '\n':
                     if(field_len-1 >= csv->fields_maxlen[field_num])
@@ -72,6 +70,7 @@ int getRecordCSV(csv_file *csv){
         }
 
         if(state == UNQUOTED_FIELD){
+            c=fgetc(csv->fcsv);
             switch(c){
                 case '\n':
                     if(field_len-1 >= csv->fields_maxlen[field_num])

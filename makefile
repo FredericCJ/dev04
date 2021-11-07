@@ -10,13 +10,13 @@ all: $(EXEC)
 geoip: geoip.o validip.o csv.o
 	@$(CC) -o $@ $^ $(LDFLAGS)
 
-csv.o: ./csv/csv.c ./csv/csv.h ./csv/config.h
+csv.o: ./csv/csv.c
 	@$(CC) -o $@ -c $< $(CFLAGS)
 
 geoip.o: geoip.c
 	@$(CC) -o $@ -c $< $(CFLAGS)
 
-validip.o: ./validip/validip.c ./validip/validip.h
+validip.o: ./validip/validip.c
 	@$(CC) -o $@ -c $< $(CFLAGS)
 
 .PHONY: clean mrproper
