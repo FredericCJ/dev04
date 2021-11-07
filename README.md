@@ -1,3 +1,3 @@
 ## DEV04
-- utiliser la compilateur clang
+- utiliser le compilateur clang
 - mettre le fichier geoip.csv à la racine du projet
