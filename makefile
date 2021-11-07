@@ -1,6 +1,6 @@
 CC=clang
 CFLAGS=-W -Wall -pedantic -std=c17
-LDFLAGS=
+LDFLAGS=-g
 EXEC=geoip
 SRC= $(wildcard *.c)
 OBJ= $(SRC:.c=.o)

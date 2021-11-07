@@ -31,38 +31,73 @@ int getRecordCSV(csv_file *csv){
     int field_len = 0;
     int field_num = 0;
     int field_pos = 0;
+    int state = OUT_OF_FIELD;
     
     if(csv->read_header == true)
         getHeader(csv);
     
     while(c != EOF){
-        c = fgetc(csv->fcsv);
         line_len++;
         field_len++;
 
-        switch(c){
-            case '\n':
-                if(field_len-1 >= csv->fields_maxlen[field_num])
-                    csv->fields_maxlen[field_num] = field_len-1;
-                csv->record[field_num][field_pos] = '\0';
-                field_len = 0;
-                csv->line_counter++;
-                if(line_len >= csv->max_len)
-                    csv->max_len = line_len;
-                return EXIT_SUCCESS;
-            
-            case CSV_DELIM:
-                if(field_len-1 >= csv->fields_maxlen[field_num])
-                    csv->fields_maxlen[field_num] = field_len-1;
-                csv->record[field_num][field_pos] = '\0';
-                field_num++;
-                field_len = 0;
-                field_pos = 0;
-                break;
-            
-            default:
-                csv->record[field_num][field_pos] = c;
-                field_pos++;
+        state = ((c=fgetc(csv->fcsv)) == '"' && state == OUT_OF_FIELD) ? QUOTED_FIELD : UNQUOTED_FIELD;
+
+        if(state == QUOTED_FIELD){
+            switch(c){
+                case '\n':
+                    if(field_len-1 >= csv->fields_maxlen[field_num])
+                        csv->fields_maxlen[field_num] = field_len-1;
+                    csv->record[field_num][field_pos] = '\0';
+                    field_len = 0;
+                    csv->line_counter++;
+                    state = OUT_OF_FIELD;
+                    if(line_len >= csv->max_len)
+                        csv->max_len = line_len;
+                    return EXIT_SUCCESS;
+                
+                case STRING_DELIM:
+                    if(field_len-1 >= csv->fields_maxlen[field_num])
+                        csv->fields_maxlen[field_num] = field_len-1;
+                    csv->record[field_num][field_pos] = '\0';
+                    field_num++;
+                    field_len = 0;
+                    field_pos = 0;
+                    state = OUT_OF_FIELD;
+                    break;
+                
+                default:
+                    csv->record[field_num][field_pos] = c;
+                    field_pos++;
+            }
+        }
+
+        if(state == UNQUOTED_FIELD){
+            switch(c){
+                case '\n':
+                    if(field_len-1 >= csv->fields_maxlen[field_num])
+                        csv->fields_maxlen[field_num] = field_len-1;
+                    csv->record[field_num][field_pos] = '\0';
+                    field_len = 0;
+                    csv->line_counter++;
+                    state = OUT_OF_FIELD;
+                    if(line_len >= csv->max_len)
+                        csv->max_len = line_len;
+                    return EXIT_SUCCESS;
+                
+                case CSV_DELIM:
+                    if(field_len-1 >= csv->fields_maxlen[field_num])
+                        csv->fields_maxlen[field_num] = field_len-1;
+                    csv->record[field_num][field_pos] = '\0';
+                    field_num++;
+                    field_len = 0;
+                    field_pos = 0;
+                    state = OUT_OF_FIELD;
+                    break;
+                
+                default:
+                    csv->record[field_num][field_pos] = c;
+                    field_pos++;
+            }
         }
     }
     return EXIT_FAILURE;
