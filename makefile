@@ -1,4 +1,4 @@
-CC=gcc
+CC=clang
 CFLAGS=-W -Wall -pedantic -std=c17
 LDFLAGS=
 EXEC=geoip
@@ -7,7 +7,7 @@ OBJ= $(SRC:.c=.o)
 
 all: $(EXEC)
 
-geoip: geoip.o validip.o ./validip/validip.h csv.o ./csv/csv.h ./csv/config.h
+geoip: geoip.o validip.o csv.o
 	@$(CC) -o $@ $^ $(LDFLAGS)
 
 csv.o: ./csv/csv.c ./csv/csv.h ./csv/config.h
@@ -22,7 +22,7 @@ validip.o: ./validip/validip.c ./validip/validip.h
 .PHONY: clean mrproper
 
 clean:
-	@rm -rf *.o *.out
+	@rm -rf *.o *.out *.gch
 
 mrproper: clean
 	@rm -rf $(EXEC)

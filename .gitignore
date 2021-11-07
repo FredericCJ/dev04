@@ -3,3 +3,4 @@ token
 geoip
 *.o
 *.csv
+*.gch
