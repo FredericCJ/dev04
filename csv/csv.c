@@ -151,26 +151,53 @@ int getHeader(csv_file *csv){
     char c = '\0';
     int field_pos = 0;
     int field_num = 0;
+    int state = OUT_OF_FIELD;
+    
     while(c != EOF){
+        c=fgetc(csv->fcsv);
 
-        c = fgetc(csv->fcsv);
+        if(state == OUT_OF_FIELD){
+            if(c == CSV_DELIM)
+                state = ON_CSV_DELIM;
+            if(c == '\n')
+                state = ON_EOL;
+            if(c == '"'){
+                state = QUOTED_FIELD;
+                c=fgetc(csv->fcsv);
+            }
+        }
 
-        switch(c){
-            case '\n':
-                csv->header[field_num][field_pos] = '\0';
-                csv->read_header = false;
-                return EXIT_SUCCESS;
-            
-            case CSV_DELIM:
-                csv->header[field_num][field_pos] = '\0';
-                field_num++;
-                field_pos = 0;
-                break;
-            
-            default:
+        if(state == QUOTED_FIELD){
+            if(c == '"')
+                state = OUT_OF_FIELD;
+            else{
                 csv->header[field_num][field_pos] = c;
                 field_pos++;
+            }
+        }
+
+        if(state == UNQUOTED_FIELD){
+            if((c == CSV_DELIM) || (c == '\n'))
+                state = OUT_OF_FIELD;
+            else{
+                csv->header[field_num][field_pos] = c;
+                field_pos++;
+            }
+        }
+
+        if(state == ON_CSV_DELIM){
+            csv->header[field_num][field_pos] = '\0';
+            field_num++;
+            field_pos = 0;
+            state = OUT_OF_FIELD;
+        }
+
+        if(state == ON_EOL){
+            csv->header[field_num][field_pos] = '\0';
+            csv->read_header = false;
+            return EXIT_SUCCESS;
         }
     }
+
     return EXIT_FAILURE;
 }
