@@ -31,72 +31,59 @@ int getRecordCSV(csv_file *csv){
         getHeader(csv);
     
     while(c != EOF){
+        c=fgetc(csv->fcsv);
         line_len++;
         field_len++;
 
         if(state == OUT_OF_FIELD){
-            c=fgetc(csv->fcsv);
-            state = (c == '"') ? QUOTED_FIELD : UNQUOTED_FIELD;
+            if(c == CSV_DELIM)
+                state = ON_CSV_DELIM;
+            if(c == '\n')
+                state = ON_EOL;
+            if(c == '"'){
+                state = QUOTED_FIELD;
+                c=fgetc(csv->fcsv);
+            }
         }
 
         if(state == QUOTED_FIELD){
-            c=fgetc(csv->fcsv);
-            switch(c){
-                case '\n':
-                    if(field_len-1 >= csv->fields_maxlen[field_num])
-                        csv->fields_maxlen[field_num] = field_len-1;
-                    csv->record[field_num][field_pos] = '\0';
-                    field_len = 0;
-                    csv->line_counter++;
-                    state = OUT_OF_FIELD;
-                    if(line_len >= csv->max_len)
-                        csv->max_len = line_len;
-                    return EXIT_SUCCESS;
-                
-                case STRING_DELIM:
-                    if(field_len-1 >= csv->fields_maxlen[field_num])
-                        csv->fields_maxlen[field_num] = field_len-1;
-                    csv->record[field_num][field_pos] = '\0';
-                    field_num++;
-                    field_len = 0;
-                    field_pos = 0;
-                    state = OUT_OF_FIELD;
-                    break;
-                
-                default:
-                    csv->record[field_num][field_pos] = c;
-                    field_pos++;
+            if(c == '"')
+                state = OUT_OF_FIELD;
+            else{
+                csv->record[field_num][field_pos] = c;
+                field_pos++;
             }
         }
 
         if(state == UNQUOTED_FIELD){
-            c=fgetc(csv->fcsv);
-            switch(c){
-                case '\n':
-                    if(field_len-1 >= csv->fields_maxlen[field_num])
-                        csv->fields_maxlen[field_num] = field_len-1;
-                    csv->record[field_num][field_pos] = '\0';
-                    field_len = 0;
-                    csv->line_counter++;
-                    state = OUT_OF_FIELD;
-                    if(line_len >= csv->max_len)
-                        csv->max_len = line_len;
-                    return EXIT_SUCCESS;
-                
-                case CSV_DELIM:
-                    if(field_len-1 >= csv->fields_maxlen[field_num])
-                        csv->fields_maxlen[field_num] = field_len-1;
-                    csv->record[field_num][field_pos] = '\0';
-                    field_num++;
-                    field_len = 0;
-                    field_pos = 0;
-                    state = OUT_OF_FIELD;
-                    break;
-                
-                default:
-                    csv->record[field_num][field_pos] = c;
-                    field_pos++;
+            if((c == CSV_DELIM) || (c == '\n'))
+                state = OUT_OF_FIELD;
+            else{
+                csv->record[field_num][field_pos] = c;
+                field_pos++;
             }
+        }
+
+        if(state == ON_CSV_DELIM){
+            if(field_len-1 >= csv->fields_maxlen[field_num])
+                csv->fields_maxlen[field_num] = field_len-1;
+            csv->record[field_num][field_pos] = '\0';
+            field_num++;
+            field_len = 0;
+            field_pos = 0;
+            state = OUT_OF_FIELD;
+        }
+
+        if(state == ON_EOL){
+            if(field_len-1 >= csv->fields_maxlen[field_num])
+                csv->fields_maxlen[field_num] = field_len-1;
+            csv->record[field_num][field_pos] = '\0';
+            field_len = 0;
+            csv->line_counter++;
+            if(line_len >= csv->max_len)
+                csv->max_len = line_len;
+            state = OUT_OF_FIELD;
+            return EXIT_SUCCESS;
         }
     }
     return EXIT_FAILURE;
