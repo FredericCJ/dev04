@@ -9,7 +9,9 @@
 #include "./csv/csv.h"
 #include "./csv/config.h"
 
-bool findIP( int ip_decimal );
+bool findIP(unsigned long int ip_decimal);
+unsigned long int cast_ip_to(csv_file *csv);
+unsigned long int cast_ip_from(csv_file *csv);
 
 int main( int argc, char **argv )
 {
@@ -33,35 +35,59 @@ int main( int argc, char **argv )
         printf("\t%s <adresse_ip>\n", argv[0]);
         exit(EXIT_FAILURE);
     }
-    
+
+    findIP(ip_decimal);
+
+    return(EXIT_SUCCESS);
+}
+
+
+bool findIP(unsigned long int ip_decimal)
+{
+    unsigned long int ip_from;
+    unsigned long int ip_to;
     csv_file csv;
 
     openCSV(&csv);
     csv.read_header = false;
 
     if (csv.is_open) {
-      while ( getRecordCSV(&csv) == 0 ) {
+        while ( getRecordCSV(&csv) == 0 ) {
 
-            if ((csv.line_counter > 0) && (csv.line_counter <= 3)) {
-               printRecordCSV(&csv);
-               printf("\n");
+            ip_from = cast_ip_from(&csv);
+            ip_to = cast_ip_to(&csv);
+
+            if(ip_decimal >= ip_from && ip_decimal <= ip_to ){
+                printf("%s\n",csv.record[2]);
+                printf("[ %lu ; %lu ]\n",ip_from,ip_to);
+                return(true);
             }
         }
-
-        printf("Taille ligne max = %d\n", csv.max_len);
-        printf("Nombre lignes = %d\n", csv.line_counter);
-
-        printFieldmaxCSV(&csv);
         printf("\n");
 
         closeCSV(&csv);
     }
-
-    return(EXIT_SUCCESS);
+    return(false);
 }
 
+unsigned long int cast_ip_from(csv_file *csv){
+    int i = 0;
+    char iptemp[11];
+    while(csv->record[0][i] != '\0'){
+        iptemp[i] = csv->record[0][i];
+        i++;
+    }
+    iptemp[i] = '\0';
+    return atol(iptemp);
+}
 
-bool findIP( int ip_decimal )
-{
-    return(false);
+unsigned long int cast_ip_to(csv_file *csv){
+    int i = 0;
+    char iptemp[11];
+    while(csv->record[1][i] != '\0'){
+        iptemp[i] = csv->record[1][i];
+        i++;
+    }
+    iptemp[i] = '\0';
+    return atol(iptemp);
 }

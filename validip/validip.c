@@ -1,8 +1,4 @@
-#include <stdbool.h>
-#include <regex.h>
-#include <assert.h>
-#include <string.h>
-#include <stdlib.h>
+#include "validip.h"
 
 // Version avec expression reguliere
 // Si retourne false si adresse invalide
