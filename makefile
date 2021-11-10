@@ -1,5 +1,5 @@
 CC=clang
-CFLAGS=-W -Wall -pedantic -std=c17
+CFLAGS=-W -Wall -pedantic -std=c17 -g
 LDFLAGS=-g
 EXEC=geoip
 SRC= $(wildcard *.c)
