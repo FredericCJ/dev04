@@ -58,8 +58,8 @@ bool findIP(unsigned long int ip_decimal)
             ip_to = cast_ip_to(&csv);
 
             if(ip_decimal >= ip_from && ip_decimal <= ip_to ){
-                printf("%s\n",csv.record[2]);
-                printf("[ %lu ; %lu ]\n",ip_from,ip_to);
+                //printf("%s\n",csv.record[2]);
+                //printf("[ %lu ; %lu ]\n",ip_from,ip_to);
                 return(true);
             }
         }
@@ -73,21 +73,23 @@ bool findIP(unsigned long int ip_decimal)
 unsigned long int cast_ip_from(csv_file *csv){
     int i = 0;
     char iptemp[11];
+    char *ptr;
     while(csv->record[0][i] != '\0'){
         iptemp[i] = csv->record[0][i];
         i++;
     }
     iptemp[i] = '\0';
-    return atol(iptemp);
+    return strtoul(iptemp,&ptr,10);
 }
 
 unsigned long int cast_ip_to(csv_file *csv){
     int i = 0;
     char iptemp[11];
+    char *ptr;
     while(csv->record[1][i] != '\0'){
         iptemp[i] = csv->record[1][i];
         i++;
     }
     iptemp[i] = '\0';
-    return atol(iptemp);
+    return strtoul(iptemp,&ptr,10);
 }
