@@ -1,4 +1,4 @@
-CC=clang
+CC=gcc
 CFLAGS=-W -Wall -pedantic -std=c17 -g
 LDFLAGS=-g
 EXEC=geoip
@@ -10,13 +10,13 @@ all: $(EXEC)
 geoip: geoip.o validip.o csv.o
 	@$(CC) -o $@ $^ $(LDFLAGS)
 
-csv.o: ./csv/csv.c
+csv.o: csv.c
 	@$(CC) -o $@ -c $< $(CFLAGS)
 
 geoip.o: geoip.c
 	@$(CC) -o $@ -c $< $(CFLAGS)
 
-validip.o: ./validip/validip.c
+validip.o: validip.c
 	@$(CC) -o $@ -c $< $(CFLAGS)
 
 .PHONY: clean mrproper

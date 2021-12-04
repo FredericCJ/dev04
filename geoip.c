@@ -5,9 +5,9 @@
 #include <regex.h>
 #include <assert.h>
 #include <errno.h>
-#include "./validip/validip.h"
-#include "./csv/csv.h"
-#include "./csv/config.h"
+#include "validip.h"
+#include "csv.h"
+#include "config.h"
 
 bool findIP(unsigned long int ip_decimal);
 unsigned long int cast_ip_to(csv_file *csv);
