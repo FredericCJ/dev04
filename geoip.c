@@ -24,13 +24,9 @@ main (int argc, char **argv)
       if (convertIP2int (argv[1], &ip_decimal))
         {
           printf ("ip_decimal=%lu\n", ip_decimal);
-          if (findIP (ip_decimal))
+          if (!findIP (ip_decimal))
             {
-              ;
-            }
-          else
-            {
-              printf ("Non trouvé\n");
+              printf("Non trouvé\n");
             }
         }
       else
